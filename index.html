@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prospection — Hugo DA</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f5f0;
+  --bg2: #ffffff;
+  --bg3: #f0ede6;
+  --bg4: #e8e4db;
+  --ink: #1a1814;
+  --ink2: #4a4640;
+  --ink3: #9a9690;
+  --ink4: #c4c0b8;
+  --accent: #d4420c;
+  --accent-l: #fff0eb;
+  --da: #1a4a8a;
+  --da-l: #eef2fa;
+  --graph: #1a7a4a;
+  --graph-l: #eef7f2;
+  --photo: #7a3a8a;
+  --photo-l: #f5eefa;
+  --score-hi: #1a7a4a;
+  --score-hi-l: #eef7f2;
+  --score-md: #8a6a0a;
+  --score-md-l: #fdf6e3;
+  --score-lo: #9a3a2a;
+  --score-lo-l: #fdf0ee;
+  --border: rgba(26,24,20,0.08);
+  --border2: rgba(26,24,20,0.14);
+  --shadow: 0 1px 3px rgba(26,24,20,0.06), 0 4px 12px rgba(26,24,20,0.04);
+  --shadow-hover: 0 2px 8px rgba(26,24,20,0.1), 0 8px 28px rgba(26,24,20,0.07);
+  --r: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Bricolage Grotesque', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+/* TOPBAR */
+.topbar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  height: 52px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  gap: 20px;
+}
+.brand { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; white-space: nowrap; }
+.brand em { color: var(--accent); font-style: normal; }
+.tabs { display: flex; height: 100%; gap: 0; }
+.tab {
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 16px; font-size: 13px; font-weight: 500;
+  color: var(--ink3); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.12s; white-space: nowrap;
+}
+.tab:hover { color: var(--ink); }
+.tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+.tbadge {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  background: var(--bg3); color: var(--ink3);
+  padding: 1px 6px; border-radius: 8px;
+}
+.tab.active .tbadge { background: var(--accent-l); color: var(--accent); }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.slots {
+  font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink3);
+}
+.slots b { color: var(--ink); }
+.btn-primary {
+  display: flex; align-items: center; gap: 5px;
+  padding: 7px 16px; background: var(--ink); color: white;
+  border: none; border-radius: 20px;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  transition: background 0.12s; white-space: nowrap;
+}
+.btn-primary:hover { background: var(--accent); }
+
+/* MAIN */
+.main { padding: 24px 28px; max-width: 1100px; margin: 0 auto; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* FILTERS */
+.filter-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 18px; flex-wrap: wrap;
+}
+.cf-btn {
+  padding: 5px 13px; border-radius: 16px; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--border2); background: var(--bg2);
+  color: var(--ink3); font-family: 'Bricolage Grotesque', sans-serif;
+  transition: all 0.12s;
+}
+.cf-btn:hover { border-color: var(--ink); color: var(--ink); }
+.cf-btn.f-all { }
+.cf-btn.f-all.on { background: var(--ink); border-color: var(--ink); color: white; }
+.cf-btn.f-da.on { background: var(--da); border-color: var(--da); color: white; }
+.cf-btn.f-graph.on { background: var(--graph); border-color: var(--graph); color: white; }
+.cf-btn.f-photo.on { background: var(--photo); border-color: var(--photo); color: white; }
+.search-wrap { margin-left: auto; position: relative; }
+.search-wrap::before { content:'⌕'; position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--ink3); font-size:14px; pointer-events:none; }
+.search-wrap input {
+  background: var(--bg2); border: 1px solid var(--border2); border-radius: 20px;
+  padding: 6px 12px 6px 28px; font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 12px; color: var(--ink); outline: none; width: 190px;
+  transition: border-color 0.12s;
+}
+.search-wrap input:focus { border-color: var(--ink); }
+
+/* OFFER LIST */
+.offers-list { display: flex; flex-direction: column; gap: 8px; }
+
+.offer-row {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r); overflow: hidden;
+  box-shadow: var(--shadow); transition: all 0.14s; cursor: pointer;
+}
+.offer-row:hover { border-color: var(--border2); box-shadow: var(--shadow-hover); transform: translateY(-1px); }
+
+.offer-main {
+  display: grid;
+  grid-template-columns: 4px 50px 1fr 140px 130px 110px;
+  align-items: center;
+  min-height: 60px;
+}
+.bar { align-self: stretch; }
+.bar.da { background: var(--da); }
+.bar.graph { background: var(--graph); }
+.bar.photo { background: var(--photo); }
+
+.score-cell { display:flex; align-items:center; justify-content:center; }
+.score-ring {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500;
+}
+.s-hi { background: var(--score-hi-l); color: var(--score-hi); }
+.s-md { background: var(--score-md-l); color: var(--score-md); }
+.s-lo { background: var(--score-lo-l); color: var(--score-lo); }
+
+.offer-info { padding: 12px 14px; min-width: 0; }
+.offer-company { font-size: 14px; font-weight: 700; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.offer-sub { font-size: 11px; color: var(--ink3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.offer-cat-cell { padding: 0 10px; }
+.cat-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 5px;
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+  letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap;
+}
+.cat-badge.da { background: var(--da-l); color: var(--da); }
+.cat-badge.graph { background: var(--graph-l); color: var(--graph); }
+.cat-badge.photo { background: var(--photo-l); color: var(--photo); }
+.offer-type-tag {
+  display: block; margin-top: 4px;
+  font-family: 'DM Mono', monospace; font-size: 9px; color: var(--ink4);
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+
+.offer-contact-cell {
+  padding: 0 10px;
+  display: flex; align-items: center; gap: 7px; min-width: 0;
+}
+.c-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--bg3); border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: var(--ink2); flex-shrink: 0;
+}
+.c-info { min-width: 0; }
+.c-name { font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.c-role-mini { font-size: 10px; color: var(--ink3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.c-pending { font-size: 11px; color: var(--ink4); font-style: italic; }
+
+.offer-actions { padding: 0 14px 0 0; display:flex; gap:6px; justify-content:flex-end; }
+.btn-contact {
+  padding: 5px 12px; background: var(--accent); color: white;
+  border: none; border-radius: 6px;
+  font-family: 'Bricolage Grotesque', sans-serif; font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all 0.12s; white-space: nowrap;
+}
+.btn-contact:hover { background: #b83609; }
+.btn-archive {
+  padding: 5px 8px; background: transparent; color: var(--ink4);
+  border: 1px solid var(--border); border-radius: 6px;
+  font-size: 11px; cursor: pointer; transition: all 0.12s;
+}
+.btn-archive:hover { color: var(--ink3); border-color: var(--border2); }
+
+/* STATUS TABS */
+.status-tabs { display: flex; gap: 6px; margin-bottom: 18px; }
+.st-btn {
+  padding: 6px 16px; border-radius: 16px; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--border2); background: var(--bg2);
+  color: var(--ink3); font-family: 'Bricolage Grotesque', sans-serif;
+  transition: all 0.12s;
+}
+.st-btn:hover { color: var(--ink); }
+.st-btn.on { background: var(--ink); border-color: var(--ink); color: white; }
+.st-btn.on.st-contact { background: var(--accent); border-color: var(--accent); }
+.st-btn.on.st-encours { background: var(--score-hi); border-color: var(--score-hi); }
+
+/* EMPTY */
+.empty {
+  text-align: center; padding: 64px 20px; color: var(--ink3);
+}
+.empty-title { font-size: 18px; font-weight: 700; color: var(--ink2); margin-bottom: 6px; }
+.empty-sub { font-size: 13px; line-height: 1.6; }
+
+/* ── MODALS ── */
+.overlay {
+  position: fixed; inset: 0; background: rgba(15,14,12,0.5);
+  backdrop-filter: blur(3px); z-index: 100;
+  display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.overlay.open { display: flex; }
+.modal {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 14px; width: 100%; max-width: 660px;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+.modal-head {
+  padding: 20px 24px 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; background: var(--bg2); z-index: 1;
+}
+.modal-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+.modal-sub { font-size: 12px; color: var(--ink3); margin-top: 1px; }
+.btn-close {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--ink3); cursor: pointer; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.12s; flex-shrink: 0;
+}
+.btn-close:hover { background: var(--bg4); color: var(--ink); }
+.modal-body { padding: 22px 24px; }
+
+/* FORM */
+.fg { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+.fg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.fg-full { grid-column: 1 / -1; }
+.flabel {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--ink3); text-transform: uppercase; letter-spacing: 0.08em;
+}
+.finput, .fselect, .ftextarea {
+  background: var(--bg); border: 1px solid var(--border2);
+  border-radius: 7px; padding: 9px 11px;
+  font-family: 'Bricolage Grotesque', sans-serif; font-size: 13px;
+  color: var(--ink); outline: none; transition: border-color 0.12s;
+}
+.finput:focus, .fselect:focus, .ftextarea:focus { border-color: var(--ink); background: white; }
+.ftextarea { min-height: 90px; resize: vertical; line-height: 1.6; }
+.fselect option { background: white; }
+.section-divider {
+  border: none; border-top: 1px solid var(--border);
+  margin: 18px 0 16px;
+}
+.section-label {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--ink3); text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 14px; display: block;
+}
+.form-actions {
+  display: flex; gap: 8px; justify-content: flex-end;
+  padding-top: 16px; border-top: 1px solid var(--border); margin-top: 6px;
+}
+.btn-cancel {
+  padding: 9px 18px; background: transparent;
+  border: 1px solid var(--border2); border-radius: 7px;
+  color: var(--ink3); font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 13px; cursor: pointer; transition: all 0.12s;
+}
+.btn-cancel:hover { background: var(--bg3); color: var(--ink); }
+.btn-save {
+  padding: 9px 22px; background: var(--ink); border: none;
+  border-radius: 7px; color: white;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.12s;
+}
+.btn-save:hover { background: var(--accent); }
+
+/* CONTACT FINDER */
+.finder-block {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 14px; margin-bottom: 14px;
+}
+.finder-title {
+  font-size: 12px; font-weight: 700; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.finder-tip { font-size: 12px; color: var(--ink2); line-height: 1.6; margin-bottom: 10px; }
+.finder-links { display: flex; flex-direction: column; gap: 6px; }
+.finder-link {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; background: white; border: 1px solid var(--border2);
+  border-radius: 6px; text-decoration: none; color: var(--ink);
+  font-size: 12px; font-weight: 600; transition: all 0.12s;
+}
+.finder-link:hover { border-color: var(--da); color: var(--da); }
+.finder-link .fl-icon { font-size: 14px; }
+.finder-link .fl-desc { font-size: 11px; color: var(--ink3); font-weight: 400; }
+
+/* MESSAGE MODAL */
+.ch-row { display: flex; gap: 6px; margin-bottom: 14px; }
+.ch-btn {
+  flex: 1; padding: 8px; border-radius: 6px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  border: 1px solid var(--border2); background: transparent;
+  color: var(--ink3); cursor: pointer; text-align: center;
+  transition: all 0.12s; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.ch-btn.on { border-color: var(--accent); color: var(--accent); background: var(--accent-l); }
+.msg-box {
+  background: var(--bg); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 16px; min-height: 160px;
+  font-size: 13px; line-height: 1.75; color: var(--ink);
+  white-space: pre-wrap; position: relative;
+}
+.msg-loading {
+  display: flex; align-items: center; gap: 10px;
+  color: var(--ink3); font-family: 'DM Mono', monospace;
+  font-size: 12px; padding: 40px 0; justify-content: center;
+}
+.spin {
+  width: 16px; height: 16px; border: 2px solid var(--border2);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.msg-actions { display: flex; gap: 8px; margin-top: 10px; }
+.btn-copy {
+  flex: 1; padding: 9px; background: var(--bg3);
+  border: 1px solid var(--border2); border-radius: 7px; color: var(--ink2);
+  font-family: 'Bricolage Grotesque', sans-serif; font-size: 12px;
+  font-weight: 600; cursor: pointer; transition: all 0.12s;
+}
+.btn-copy:hover { background: var(--bg4); }
+.btn-regen {
+  padding: 9px 18px; background: transparent;
+  border: 1px solid var(--accent); border-radius: 7px; color: var(--accent);
+  font-family: 'Bricolage Grotesque', sans-serif; font-size: 12px;
+  font-weight: 600; cursor: pointer; transition: all 0.12s;
+}
+.btn-regen:hover { background: var(--accent-l); }
+
+/* DETAIL */
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+.detail-field { }
+.df-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 3px; }
+.df-val { font-size: 13px; color: var(--ink); line-height: 1.5; }
+.df-link { color: var(--da); text-decoration: none; font-size: 12px; }
+.df-link:hover { text-decoration: underline; }
+
+.contact-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 14px;
+  display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px;
+}
+.contact-card-av {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--bg2); border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: var(--ink2); flex-shrink: 0;
+}
+.contact-card-info { flex: 1; min-width: 0; }
+.ccname { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.ccrole { font-size: 12px; color: var(--ink3); margin-bottom: 8px; }
+.cc-links { display: flex; gap: 6px; flex-wrap: wrap; }
+.cc-link {
+  padding: 4px 10px; border-radius: 5px; font-size: 11px;
+  border: 1px solid var(--border2); background: var(--bg2);
+  color: var(--ink2); text-decoration: none; transition: all 0.12s;
+  font-family: 'DM Mono', monospace; cursor: pointer;
+}
+.cc-link:hover { border-color: var(--da); color: var(--da); }
+
+.desc-block {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 14px; font-size: 12px;
+  color: var(--ink2); line-height: 1.7; max-height: 130px;
+  overflow-y: auto; margin-bottom: 16px;
+}
+.detail-actions { display: flex; gap: 8px; padding-top: 14px; border-top: 1px solid var(--border); }
+
+/* STATUS BADGE */
+.status-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 5px;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.sb-acontacter { background: var(--score-lo-l); color: var(--score-lo); }
+.sb-encours { background: var(--score-hi-l); color: var(--score-hi); }
+.sb-archive { background: var(--bg3); color: var(--ink4); }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 20px; right: 20px;
+  background: var(--ink); color: white; border-radius: 8px;
+  padding: 10px 16px; font-size: 13px; font-weight: 500;
+  z-index: 999; transform: translateY(60px); opacity: 0;
+  transition: all 0.22s; pointer-events: none;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* SYNC STATUS */
+.sync-btn {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 12px; border-radius: 16px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  border: 1px solid var(--border2); background: transparent;
+  color: var(--ink3); cursor: pointer; transition: all 0.12s;
+  white-space: nowrap;
+}
+.sync-btn:hover { border-color: var(--ink); color: var(--ink); }
+.sync-btn.syncing { color: var(--accent); border-color: var(--accent-l); }
+.sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ink4); flex-shrink: 0; }
+.sync-dot.ok { background: var(--score-hi); }
+.sync-dot.err { background: var(--score-lo); }
+.sync-dot.spinning {
+  border: 1.5px solid var(--border2); border-top-color: var(--accent);
+  background: transparent; animation: spin .7s linear infinite;
+}
+
+/* LIMIT BAR */
+.limit-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 16px; margin-bottom: 18px;
+}
+.limit-track { flex: 1; height: 4px; background: var(--bg4); border-radius: 2px; }
+.limit-fill { height: 100%; border-radius: 2px; background: var(--accent); transition: width 0.3s; }
+.limit-text { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink3); white-space: nowrap; }
+.limit-text b { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand">Hugo <em>·</em> Prospection</div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('acontacter',this)">
+      À contacter <span class="tbadge" id="tb-acontacter">0</span>
+    </div>
+    <div class="tab" onclick="switchTab('encours',this)">
+      En cours <span class="tbadge" id="tb-encours">0</span>
+    </div>
+    <div class="tab" onclick="switchTab('archive',this)">
+      Archivé <span class="tbadge" id="tb-archive">0</span>
+    </div>
+    <div class="tab" onclick="switchTab('toutes',this)">
+      Toutes <span class="tbadge" id="tb-toutes">0</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <button class="sync-btn" id="sync-btn" onclick="syncSheets()" title="Synchroniser depuis Google Sheets">
+      <div class="sync-dot" id="sync-dot"></div>
+      <span id="sync-label">Sheets</span>
+    </button>
+    <div class="slots" id="slots-display"><b>0</b>/50 offres</div>
+    <button class="btn-primary" onclick="openAdd()">+ Ajouter</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- PANEL -->
+  <div id="panel-main" class="panel active">
+    <div class="filter-row">
+      <button class="cf-btn f-all on" id="cf-all" onclick="setFilter('all')">Tout</button>
+      <button class="cf-btn f-da" id="cf-da" onclick="setFilter('da')">Direction artistique</button>
+      <button class="cf-btn f-graph" id="cf-graph" onclick="setFilter('graph')">Graphisme</button>
+      <button class="cf-btn f-photo" id="cf-photo" onclick="setFilter('photo')">Photo</button>
+      <div class="search-wrap">
+        <input type="text" id="search" placeholder="Rechercher..." oninput="render()">
+      </div>
+    </div>
+    <div class="limit-bar">
+      <div class="limit-track"><div class="limit-fill" id="limit-fill" style="width:0%"></div></div>
+      <div class="limit-text" id="limit-text"><b>0</b>/50 — ajoute jusqu'à 50 offres actives</div>
+    </div>
+    <div class="offers-list" id="offers-list"></div>
+    <div class="empty" id="empty-state" style="display:none">
+      <div class="empty-title">Aucune offre ici</div>
+      <div class="empty-sub">Ajoute ta première offre via le bouton en haut à droite.<br>Colle le texte de l'annonce — Claude analyse et trouve le bon contact.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL ADD -->
+<div class="overlay" id="modal-add">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Nouvelle offre</div>
+        <div class="modal-sub">DA · Graphisme · Photo · CDI · Freelance · Mission — tout type</div>
+      </div>
+      <button class="btn-close" onclick="closeModal('modal-add')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg-grid">
+        <div class="fg">
+          <label class="flabel">Entreprise *</label>
+          <input class="finput" id="f-co" placeholder="ex: Ogilvy Paris">
+        </div>
+        <div class="fg">
+          <label class="flabel">Catégorie *</label>
+          <select class="fselect" id="f-cat">
+            <option value="da">Direction Artistique</option>
+            <option value="graph">Graphisme</option>
+            <option value="photo">Photo</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="flabel">Rôle / Intitulé</label>
+          <input class="finput" id="f-role" placeholder="ex: DA Brand Senior">
+        </div>
+        <div class="fg">
+          <label class="flabel">Type de mission</label>
+          <select class="fselect" id="f-type">
+            <option value="Freelance">Freelance</option>
+            <option value="Mission longue">Mission longue</option>
+            <option value="CDI">CDI</option>
+            <option value="CDD">CDD</option>
+            <option value="Alternance">Alternance</option>
+            <option value="Stage">Stage</option>
+            <option value="Autre">Autre</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="flabel">Source</label>
+          <select class="fselect" id="f-src">
+            <option>LinkedIn</option>
+            <option>Welcome to the Jungle</option>
+            <option>Malt</option>
+            <option>Comet</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="flabel">Lieu</label>
+          <input class="finput" id="f-loc" placeholder="ex: Paris / Remote">
+        </div>
+        <div class="fg">
+          <label class="flabel">Budget / TJM / Salaire</label>
+          <input class="finput" id="f-budget" placeholder="ex: 480€/j ou 45k€">
+        </div>
+        <div class="fg">
+          <label class="flabel">Lien de l'offre</label>
+          <input class="finput" id="f-url" placeholder="https://...">
+        </div>
+        <div class="fg fg-full">
+          <label class="flabel">Description complète de l'offre *</label>
+          <textarea class="ftextarea" id="f-desc" style="min-height:110px;" placeholder="Colle ici le texte intégral de l'annonce — Claude s'en sert pour analyser, scorer et trouver le bon contact à cibler..."></textarea>
+        </div>
+      </div>
+
+      <hr class="section-divider">
+      <span class="section-label">Contact décideur (optionnel — ou laisse vide, Claude suggère)</span>
+
+      <div class="fg-grid">
+        <div class="fg">
+          <label class="flabel">Nom</label>
+          <input class="finput" id="f-cn" placeholder="ex: Claire Moreau">
+        </div>
+        <div class="fg">
+          <label class="flabel">Titre / Poste</label>
+          <input class="finput" id="f-cr" placeholder="ex: Directrice de Création">
+        </div>
+        <div class="fg">
+          <label class="flabel">Email pro</label>
+          <input class="finput" id="f-ce" placeholder="claire@entreprise.fr">
+        </div>
+        <div class="fg">
+          <label class="flabel">Téléphone</label>
+          <input class="finput" id="f-cp" placeholder="+33 6...">
+        </div>
+        <div class="fg">
+          <label class="flabel">LinkedIn (profil)</label>
+          <input class="finput" id="f-cli" placeholder="https://linkedin.com/in/...">
+        </div>
+        <div class="fg">
+          <label class="flabel">Instagram</label>
+          <input class="finput" id="f-cinsta" placeholder="@handle ou URL">
+        </div>
+        <div class="fg fg-full">
+          <label class="flabel">Page LinkedIn entreprise</label>
+          <input class="finput" id="f-co-li" placeholder="https://linkedin.com/company/...">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-cancel" onclick="closeModal('modal-add')">Annuler</button>
+        <button class="btn-save" onclick="saveOffer()">Enregistrer + analyser</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETAIL -->
+<div class="overlay" id="modal-detail">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="d-title">—</div>
+        <div class="modal-sub" id="d-sub">—</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="btn-contact" onclick="openMsg()" style="padding:6px 14px;border:none;border-radius:6px;background:var(--accent);color:white;font-family:'Bricolage Grotesque',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Rédiger message</button>
+        <button class="btn-close" onclick="closeModal('modal-detail')">✕</button>
+      </div>
+    </div>
+    <div class="modal-body" id="d-body"></div>
+  </div>
+</div>
+
+<!-- MODAL MESSAGE -->
+<div class="overlay" id="modal-msg">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Message personnalisé</div>
+        <div class="modal-sub" id="msg-for">—</div>
+      </div>
+      <button class="btn-close" onclick="closeModal('modal-msg')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="ch-row">
+        <button class="ch-btn on" id="ch-email" onclick="setChannel('email')">Gmail / Email</button>
+        <button class="ch-btn" id="ch-li" onclick="setChannel('linkedin')">LinkedIn</button>
+        <button class="ch-btn" id="ch-insta" onclick="setChannel('instagram')">Instagram</button>
+      </div>
+      <div class="msg-box" id="msg-output">
+        <div class="msg-loading"><div class="spin"></div><span>Génération...</span></div>
+      </div>
+      <div class="msg-actions">
+        <button class="btn-copy" onclick="copyMsg()">Copier</button>
+        <button class="btn-regen" onclick="generateMsg()">Régénérer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────
+const KEY = 'hugo_v3';
+let S = { offers: [], tab: 'acontacter', filter: 'all' };
+let current = null;
+let channel = 'email';
+const MAX = 50;
+
+function load() {
+  try { const d = localStorage.getItem(KEY); if(d) S = {...S, ...JSON.parse(d)}; } catch(e){}
+}
+function persist() { localStorage.setItem(KEY, JSON.stringify(S)); }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+// ── TABS ──────────────────────────────────────────────────────
+function switchTab(t, el) {
+  S.tab = t;
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  if(el) el.classList.add('active');
+  render();
+}
+
+// ── FILTERS ──────────────────────────────────────────────────
+function setFilter(f) {
+  S.filter = f;
+  ['all','da','graph','photo'].forEach(k => {
+    const btn = document.getElementById('cf-'+k);
+    if(!btn) return;
+    btn.className = btn.className.replace(/ on/g,'');
+    if(k === f) btn.classList.add('on');
+  });
+  render();
+}
+
+// ── RENDER ────────────────────────────────────────────────────
+function catLabel(c) { return c==='da'?'Direction artistique':c==='graph'?'Graphisme':'Photo'; }
+function initials(name) {
+  if(!name) return '?';
+  return name.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2);
+}
+function scoreClass(s) { return s>=7?'s-hi':s>=5?'s-md':'s-lo'; }
+
+function render() {
+  const list = document.getElementById('offers-list');
+  const empty = document.getElementById('empty-state');
+  const q = (document.getElementById('search')?.value||'').toLowerCase();
+
+  let offers = [...S.offers];
+  // tab filter
+  if(S.tab !== 'toutes') offers = offers.filter(o => (o.status||'acontacter') === S.tab);
+  // cat filter
+  if(S.filter !== 'all') offers = offers.filter(o => o.cat === S.filter);
+  // search
+  if(q) offers = offers.filter(o =>
+    o.company.toLowerCase().includes(q) ||
+    (o.role||'').toLowerCase().includes(q) ||
+    (o.desc||'').toLowerCase().includes(q)
+  );
+
+  // badges
+  const all = S.offers;
+  document.getElementById('tb-acontacter').textContent = all.filter(o=>(o.status||'acontacter')==='acontacter').length;
+  document.getElementById('tb-encours').textContent = all.filter(o=>o.status==='encours').length;
+  document.getElementById('tb-archive').textContent = all.filter(o=>o.status==='archive').length;
+  document.getElementById('tb-toutes').textContent = all.length;
+
+  // limit bar
+  const pct = Math.min(100, Math.round((all.length / MAX) * 100));
+  document.getElementById('limit-fill').style.width = pct + '%';
+  document.getElementById('limit-text').innerHTML = `<b>${all.length}</b>/${MAX} offres actives`;
+  document.getElementById('slots-display').innerHTML = `<b>${all.length}</b>/${MAX} offres`;
+
+  if(!offers.length) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  list.innerHTML = offers.map(o => {
+    const score = o.score || 0;
+    const sc = scoreClass(score);
+    const hasContact = o.contact && o.contact.name;
+    const contactName = o.contact?.name || '';
+    const contactRole = o.contact?.name ? (o.contact.role || '') : '';
+    const statusCls = o.status === 'encours' ? 'sb-encours' : o.status === 'archive' ? 'sb-archive' : 'sb-acontacter';
+    const statusLabel = o.status === 'encours' ? 'En cours' : o.status === 'archive' ? 'Archivé' : 'À contacter';
+
+    return `<div class="offer-row" onclick="openDetail('${o.id}')">
+      <div class="offer-main">
+        <div class="bar ${o.cat}"></div>
+        <div class="score-cell">
+          <div class="score-ring ${sc}">${score}</div>
+        </div>
+        <div class="offer-info">
+          <div class="offer-company">${o.company}</div>
+          <div class="offer-sub">${o.role||catLabel(o.cat)} · ${o.type||'Mission'} · ${o.source||''}</div>
+        </div>
+        <div class="offer-cat-cell">
+          <span class="cat-badge ${o.cat}">${catLabel(o.cat)}</span>
+          <span class="offer-type-tag">${o.loc||''}</span>
+        </div>
+        <div class="offer-contact-cell">
+          ${hasContact ? `
+            <div class="c-avatar">${initials(contactName)}</div>
+            <div class="c-info">
+              <div class="c-name">${contactName}</div>
+              <div class="c-role-mini">${contactRole}</div>
+            </div>
+          ` : `<span class="c-pending">À identifier</span>`}
+        </div>
+        <div class="offer-actions">
+          <button class="btn-contact" onclick="event.stopPropagation();openMsgDirect('${o.id}')">Message →</button>
+          <button class="btn-archive" onclick="event.stopPropagation();cycleStatus('${o.id}')" title="Changer statut">⇄</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function cycleStatus(id) {
+  const o = S.offers.find(x=>x.id===id);
+  if(!o) return;
+  const cycle = { acontacter:'encours', encours:'archive', archive:'acontacter' };
+  o.status = cycle[o.status||'acontacter'];
+  persist(); render();
+  showToast('Statut → ' + (o.status==='encours'?'En cours':o.status==='archive'?'Archivé':'À contacter'));
+}
+
+// ── ADD OFFER ─────────────────────────────────────────────────
+function openAdd() {
+  if(S.offers.length >= MAX) { showToast('Limite 50 atteinte — archive ou supprime une offre'); return; }
+  ['f-co','f-role','f-loc','f-budget','f-url','f-desc','f-cn','f-cr','f-ce','f-cp','f-cli','f-cinsta','f-co-li']
+    .forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('f-cat').value='da';
+  document.getElementById('f-type').value='Freelance';
+  document.getElementById('f-src').value='LinkedIn';
+  document.getElementById('modal-add').classList.add('open');
+}
+
+async function saveOffer() {
+  const co = document.getElementById('f-co').value.trim();
+  if(!co) { showToast('Entreprise obligatoire'); return; }
+  const desc = document.getElementById('f-desc').value.trim();
+
+  const o = {
+    id: uid(),
+    company: co,
+    cat: document.getElementById('f-cat').value,
+    role: document.getElementById('f-role').value.trim(),
+    type: document.getElementById('f-type').value,
+    source: document.getElementById('f-src').value,
+    loc: document.getElementById('f-loc').value.trim(),
+    budget: document.getElementById('f-budget').value.trim(),
+    url: document.getElementById('f-url').value.trim(),
+    desc,
+    liCompany: document.getElementById('f-co-li').value.trim(),
+    contact: {
+      name: document.getElementById('f-cn').value.trim(),
+      role: document.getElementById('f-cr').value.trim(),
+      email: document.getElementById('f-ce').value.trim(),
+      phone: document.getElementById('f-cp').value.trim(),
+      li: document.getElementById('f-cli').value.trim(),
+      insta: document.getElementById('f-cinsta').value.trim(),
+    },
+    status: 'acontacter',
+    score: 0,
+    aiContact: null,
+    createdAt: Date.now(),
+  };
+
+  S.offers.unshift(o);
+  persist();
+  closeModal('modal-add');
+  render();
+  showToast('Offre ajoutée — analyse en cours...');
+
+  // score + contact finder in background
+  if(desc) analyzeOffer(o.id);
+}
+
+// ── AI ANALYSIS ───────────────────────────────────────────────
+async function analyzeOffer(id) {
+  const o = S.offers.find(x=>x.id===id);
+  if(!o || !o.desc) return;
+
+  const prompt = `Tu es un assistant de prospection pour Hugo, directeur artistique freelance senior en France.
+
+Analyse cette offre et réponds UNIQUEMENT en JSON valide, sans markdown, sans texte autour :
+
+{
+  "score": <nombre 1-10>,
+  "score_reasons": "<2-3 raisons courtes séparées par ·>",
+  "contact_title": "<titre exact à rechercher sur LinkedIn pour cette entreprise, ex: Directrice de Création ou Head of Brand>",
+  "contact_why": "<1 phrase : pourquoi ce titre est le bon décideur pour cette offre>",
+  "email_pattern": "<format email probable ex: prenom.nom@entreprise.fr>",
+  "linkedin_search_query": "<requête de recherche LinkedIn People ex: directrice création Ogilvy Paris>",
+  "approach_angle": "<1 phrase d'angle d'approche unique basée sur le contexte de l'offre>"
+}
+
+Score sur 10 basé sur : pertinence pour un DA senior (DA/Graphisme/Photo), clarté budget/TJM, secteur premium, durée viable.
+
+OFFRE :
+Entreprise: ${o.company}
+Catégorie: ${catLabel(o.cat)}
+Type: ${o.type||'Non précisé'}
+Rôle: ${o.role||'Non précisé'}
+Lieu: ${o.loc||'Non précisé'}
+Budget: ${o.budget||'Non précisé'}
+Description: ${o.desc.slice(0,600)}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 600,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const raw = data.content?.map(b=>b.text||'').join('') || '';
+    const clean = raw.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(clean);
+
+    const idx = S.offers.findIndex(x=>x.id===id);
+    if(idx !== -1) {
+      S.offers[idx].score = parsed.score || 0;
+      S.offers[idx].aiContact = parsed;
+      persist(); render();
+    }
+  } catch(e) {
+    // silently fail, score stays 0
+  }
+}
+
+// ── DETAIL ────────────────────────────────────────────────────
+function openDetail(id) {
+  const o = S.offers.find(x=>x.id===id);
+  if(!o) return;
+  current = o;
+
+  document.getElementById('d-title').textContent = o.company;
+  document.getElementById('d-sub').textContent = (o.role||catLabel(o.cat)) + ' · ' + (o.type||'Mission') + ' · ' + (o.source||'');
+
+  const ai = o.aiContact;
+  const hasContact = o.contact?.name;
+  const liQuery = ai?.linkedin_search_query;
+  const liSearchUrl = liQuery ? `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(liQuery)}` : null;
+  const liCoSearch = o.company ? `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent((ai?.contact_title||'directeur création')+' '+o.company)}` : null;
+
+  document.getElementById('d-body').innerHTML = `
+    <div class="detail-grid">
+      ${o.loc ? `<div class="detail-field"><div class="df-label">Lieu</div><div class="df-val">${o.loc}</div></div>` : ''}
+      ${o.budget ? `<div class="detail-field"><div class="df-label">Budget</div><div class="df-val">${o.budget}</div></div>` : ''}
+      ${o.type ? `<div class="detail-field"><div class="df-label">Type</div><div class="df-val">${o.type}</div></div>` : ''}
+      ${o.source ? `<div class="detail-field"><div class="df-label">Source</div><div class="df-val">${o.source}</div></div>` : ''}
+      ${o.url ? `<div class="detail-field" style="grid-column:1/-1"><div class="df-label">Offre</div><a href="${o.url}" target="_blank" class="df-link">Voir l'annonce →</a></div>` : ''}
+    </div>
+
+    ${ai ? `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:16px;display:flex;gap:12px;align-items:flex-start;">
+      <div style="flex-shrink:0;margin-top:2px;">
+        <div class="score-ring ${scoreClass(ai.score)}" style="width:36px;height:36px;font-size:14px;">${ai.score}</div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:700;margin-bottom:3px;">Score IA · ${ai.score}/10</div>
+        <div style="font-size:12px;color:var(--ink2);">${ai.score_reasons||''}</div>
+        ${ai.approach_angle ? `<div style="font-size:12px;color:var(--accent);margin-top:6px;font-style:italic;">"${ai.approach_angle}"</div>` : ''}
+      </div>
+    </div>` : ''}
+
+    ${o.desc ? `<div class="desc-block">${o.desc}</div>` : ''}
+
+    ${hasContact ? `
+    <div style="margin-bottom:6px;"><span class="df-label">Décideur identifié</span></div>
+    <div class="contact-card">
+      <div class="contact-card-av">${initials(o.contact.name)}</div>
+      <div class="contact-card-info">
+        <div class="ccname">${o.contact.name}</div>
+        <div class="ccrole">${o.contact.role||''}</div>
+        <div class="cc-links">
+          ${o.contact.li ? `<a class="cc-link" href="${o.contact.li}" target="_blank">LinkedIn →</a>` : ''}
+          ${o.contact.email ? `<a class="cc-link" href="mailto:${o.contact.email}">✉ ${o.contact.email}</a>` : ''}
+          ${o.contact.phone ? `<a class="cc-link" href="tel:${o.contact.phone}">${o.contact.phone}</a>` : ''}
+          ${o.contact.insta ? `<a class="cc-link" href="${o.contact.insta.startsWith('http')?o.contact.insta:'https://instagram.com/'+o.contact.insta.replace('@','')}" target="_blank">Instagram</a>` : ''}
+        </div>
+      </div>
+    </div>` : ''}
+
+    ${ai ? `
+    <div style="margin-bottom:10px;"><span class="df-label">Trouver le bon contact</span></div>
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:12px;color:var(--ink2);margin-bottom:10px;">
+        <b>Cherche :</b> ${ai.contact_title||'—'}<br>
+        <span style="color:var(--ink3);">${ai.contact_why||''}</span>
+      </div>
+      ${ai.email_pattern ? `<div style="font-size:11px;color:var(--ink3);margin-bottom:10px;font-family:'DM Mono',monospace;">Format email probable : ${ai.email_pattern}</div>` : ''}
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        ${liSearchUrl ? `<a href="${liSearchUrl}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:white;border:1px solid var(--border2);border-radius:6px;text-decoration:none;color:var(--ink);font-size:12px;font-weight:600;transition:all 0.12s;">
+          <span>🔍</span>
+          <div><div>Recherche LinkedIn People</div><div style="font-size:10px;color:var(--ink3);font-weight:400;">${ai.linkedin_search_query}</div></div>
+          <span style="margin-left:auto;color:var(--ink4);">→</span>
+        </a>` : ''}
+        ${liCoSearch ? `<a href="${liCoSearch}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:white;border:1px solid var(--border2);border-radius:6px;text-decoration:none;color:var(--ink);font-size:12px;font-weight:600;transition:all 0.12s;">
+          <span>🏢</span>
+          <div><div>Chercher dans l'équipe de ${o.company}</div><div style="font-size:10px;color:var(--ink3);font-weight:400;">${ai.contact_title} · ${o.company}</div></div>
+          <span style="margin-left:auto;color:var(--ink4);">→</span>
+        </a>` : ''}
+        ${o.liCompany ? `<a href="${o.liCompany}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:white;border:1px solid var(--border2);border-radius:6px;text-decoration:none;color:var(--ink);font-size:12px;font-weight:600;transition:all 0.12s;">
+          <span>📄</span><div>Page LinkedIn entreprise</div><span style="margin-left:auto;color:var(--ink4);">→</span>
+        </a>` : ''}
+      </div>
+    </div>` : ''}
+
+    <div class="detail-actions">
+      <button class="btn-save" style="flex:1;" onclick="closeModal('modal-detail');openMsg()">Rédiger un message</button>
+      <button class="btn-cancel" onclick="cycleStatusFromDetail('${o.id}')">Changer statut</button>
+      <button class="btn-cancel" style="color:var(--score-lo);border-color:var(--score-lo-l);" onclick="deleteOffer('${o.id}')">Supprimer</button>
+    </div>
+  `;
+
+  document.getElementById('modal-detail').classList.add('open');
+}
+
+function cycleStatusFromDetail(id) {
+  cycleStatus(id);
+  closeModal('modal-detail');
+}
+
+function deleteOffer(id) {
+  if(!confirm('Supprimer cette offre ?')) return;
+  S.offers = S.offers.filter(x=>x.id!==id);
+  persist(); render();
+  closeModal('modal-detail');
+  showToast('Offre supprimée');
+}
+
+// ── MESSAGE ───────────────────────────────────────────────────
+function openMsgDirect(id) {
+  const o = S.offers.find(x=>x.id===id);
+  if(!o) return;
+  current = o;
+  openMsg();
+}
+
+function openMsg() {
+  if(!current) return;
+  channel = 'email';
+  ['email','li','insta'].forEach(c => document.getElementById('ch-'+c)?.classList.remove('on'));
+  document.getElementById('ch-email')?.classList.add('on');
+  document.getElementById('msg-for').textContent = current.company + ' · ' + (current.role || catLabel(current.cat));
+  document.getElementById('modal-msg').classList.add('open');
+  generateMsg();
+}
+
+function setChannel(ch) {
+  channel = ch;
+  const map = { email:'email', linkedin:'li', instagram:'insta' };
+  ['email','li','insta'].forEach(c => document.getElementById('ch-'+c)?.classList.remove('on'));
+  document.getElementById('ch-' + map[ch])?.classList.add('on');
+  generateMsg();
+}
+
+async function generateMsg() {
+  const o = current;
+  if(!o) return;
+  const out = document.getElementById('msg-output');
+  out.innerHTML = `<div class="msg-loading"><div class="spin"></div><span>Génération...</span></div>`;
+
+  const ai = o.aiContact;
+  const contactName = o.contact?.name || 'le ou la décideur(se)';
+  const contactTitle = o.contact?.role || ai?.contact_title || 'DC / Responsable Com';
+
+  const chInstructions = {
+    email: `Email pro. Commence par "Objet : [accroche]" puis le corps. 4 paragraphes courts, max 180 mots. Signe "Hugo".`,
+    linkedin: `Message LinkedIn InMail. Max 280 caractères. Hook direct en 1ère phrase, 1 question finale ouverte. Naturel, pas de formule de politesse.`,
+    instagram: `DM Instagram. Max 120 caractères. Très court, accroche créative, ton humain. Pas de "bonjour madame".`
+  };
+
+  const prompt = `Tu es Hugo, directeur artistique freelance senior en France. Rédige un message de prospection.
+
+CONTEXTE DE L'OFFRE :
+- Entreprise : ${o.company}
+- Catégorie : ${catLabel(o.cat)}
+- Type : ${o.type||'Mission'}
+- Rôle : ${o.role||'Non précisé'}
+- Lieu : ${o.loc||'Non précisé'}
+- Budget : ${o.budget||'Non précisé'}
+${o.desc ? `- Extrait annonce : ${o.desc.slice(0,350)}` : ''}
+${ai?.approach_angle ? `- Angle suggéré : ${ai.approach_angle}` : ''}
+
+CONTACT CIBLE : ${contactName}, ${contactTitle}
+
+FORMAT : ${chInstructions[channel]}
+
+RÈGLES ABSOLUES :
+- Hugo ne mendie pas, il propose une valeur créative précise
+- Mentionne UN élément spécifique de l'entreprise ou de l'annonce
+- Zéro "Je me permets", "Suite à votre annonce", "Je serais ravi", "N'hésitez pas"
+- Court, direct, mémorable, avec une vraie personnalité créative
+- Rédige UNIQUEMENT le message final, rien d'autre`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 800,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.map(b=>b.text||'').join('') || 'Erreur de génération.';
+    out.textContent = text;
+
+    // mark as contacted
+    if(current) {
+      const idx = S.offers.findIndex(x=>x.id===current.id);
+      if(idx!==-1 && S.offers[idx].status === 'acontacter') {
+        S.offers[idx].status = 'encours';
+        persist(); render();
+      }
+    }
+  } catch(e) {
+    out.textContent = 'Erreur réseau. Réessaie.';
+  }
+}
+
+function copyMsg() {
+  const t = document.getElementById('msg-output').textContent;
+  if(!t || t.includes('Génération')) return;
+  navigator.clipboard.writeText(t).then(() => showToast('Copié ✓'));
+}
+
+// ── GOOGLE SHEETS SYNC ────────────────────────────────────────
+const SHEET_ID = '1T3ZxNfBPgdMV9Wgl8qhxZuh9W5CS9nkzLGEA544BU3w';
+const SHEET_CSV = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
+// Google Visualization API — passe le CORS, fonctionne sur sheet public sans clé
+const SHEET_GVZ = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Sheet1`;
+// Colonnes attendues dans le Sheet (ligne 1 = headers) :
+// id | company | cat | role | type | source | loc | budget | url | liCompany | desc
+// | contact_name | contact_role | contact_email | contact_phone | contact_li | contact_insta
+// | status | score | createdAt
+
+function setSyncState(state) {
+  const dot = document.getElementById('sync-dot');
+  const label = document.getElementById('sync-label');
+  const btn = document.getElementById('sync-btn');
+  if(!dot || !label) return;
+  dot.className = 'sync-dot';
+  btn.classList.remove('syncing');
+  if(state === 'loading') {
+    dot.classList.add('spinning'); btn.classList.add('syncing');
+    label.textContent = 'Sync...';
+  } else if(state === 'ok') {
+    dot.classList.add('ok');
+    const now = new Date();
+    label.textContent = now.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+  } else if(state === 'err') {
+    dot.classList.add('err');
+    label.textContent = 'Erreur';
+  } else {
+    label.textContent = 'Sheets';
+  }
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if(lines.length < 2) return [];
+  // Parse header
+  const headers = parseCSVLine(lines[0]);
+  const rows = [];
+  for(let i=1; i<lines.length; i++) {
+    const cells = parseCSVLine(lines[i]);
+    if(!cells.length || !cells[0]) continue;
+    const obj = {};
+    headers.forEach((h, idx) => { obj[h.trim()] = (cells[idx] || '').trim(); });
+    rows.push(obj);
+  }
+  return rows;
+}
+
+function parseCSVLine(line) {
+  // Handles quoted fields with commas
+  const result = [];
+  let cur = '';
+  let inQ = false;
+  for(let i=0; i<line.length; i++) {
+    const c = line[i];
+    if(c === '"') {
+      if(inQ && line[i+1] === '"') { cur += '"'; i++; }
+      else { inQ = !inQ; }
+    } else if(c === ',' && !inQ) {
+      result.push(cur); cur = '';
+    } else {
+      cur += c;
+    }
+  }
+  result.push(cur);
+  return result;
+}
+
+function sheetRowToOffer(row) {
+  // Converts a Sheet row object to the internal offer format
+  return {
+    id: row.id || uid(),
+    company: row.company || '',
+    cat: row.cat || 'da',
+    role: row.role || '',
+    type: row.type || 'Freelance',
+    source: row.source || 'LinkedIn',
+    loc: row.loc || '',
+    budget: row.budget || '',
+    url: row.url || '',
+    liCompany: row.liCompany || '',
+    desc: row.desc || '',
+    contact: {
+      name: row.contact_name || '',
+      role: row.contact_role || '',
+      email: row.contact_email || '',
+      phone: row.contact_phone || '',
+      li: row.contact_li || '',
+      insta: row.contact_insta || '',
+    },
+    status: row.status || 'acontacter',
+    score: parseInt(row.score) || 0,
+    aiContact: null,
+    createdAt: row.createdAt ? parseInt(row.createdAt) : Date.now(),
+    fromSheet: true,
+  };
+}
+
+async function syncSheets() {
+  setSyncState('loading');
+  try {
+    let csvText = null;
+
+    // Attempt 1 — Google Visualization API (passe CORS nativement sur sheet public)
+    try {
+      const res = await fetch(SHEET_GVZ, { cache: 'no-cache' });
+      if(res.ok) {
+        const t = await res.text();
+        if(!t.trim().startsWith('<!')) csvText = t;
+      }
+    } catch(e) { /* essai suivant */ }
+
+    // Attempt 2 — Export CSV direct
+    if(!csvText) {
+      try {
+        const res = await fetch(SHEET_CSV, { cache: 'no-cache' });
+        if(res.ok) {
+          const t = await res.text();
+          if(!t.trim().startsWith('<!')) csvText = t;
+        }
+      } catch(e) { /* essai suivant */ }
+    }
+
+    // Attempt 3 — corsproxy.io sur l'URL gviz
+    if(!csvText) {
+      try {
+        const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(SHEET_GVZ)}`, { cache: 'no-cache' });
+        if(res.ok) {
+          const t = await res.text();
+          if(!t.trim().startsWith('<!')) csvText = t;
+        }
+      } catch(e) { /* échec */ }
+    }
+
+    if(!csvText) throw new Error('Impossible de lire le Sheet. Vérifie : Partager → "Tout le monde sur Internet" → Lecteur');
+
+    // Sécurité : si Google répond une page login
+    if(csvText.includes('accounts.google.com') || csvText.includes('ServiceLogin')) {
+      throw new Error('Sheet privé — Partager → "Tout le monde sur Internet" → Lecteur');
+    }
+
+    const rows = parseCSV(csvText);
+    if(!rows.length) {
+      setSyncState('ok');
+      showToast('Sheet vide — aucune offre importée');
+      return;
+    }
+
+    // Merge: offres du Sheet → toujours prioritaires sur les démos
+    // Les offres locales sans fromSheet sont conservées (ajout manuel)
+    const sheetIds = new Set(rows.map(r => r.id).filter(Boolean));
+    const localManual = S.offers.filter(o => !o.fromSheet && !sheetIds.has(o.id));
+    const sheetOffers = rows.map(r => {
+      const existing = S.offers.find(x => x.id === r.id);
+      const converted = sheetRowToOffer(r);
+      // Keep local AI analysis if already done
+      if(existing?.aiContact) converted.aiContact = existing.aiContact;
+      if(existing?.aiContact && !converted.score) converted.score = existing.score;
+      return converted;
+    });
+
+    // Combine: sheet first, then local manual
+    const merged = [...sheetOffers, ...localManual].slice(0, MAX);
+    S.offers = merged;
+    persist();
+    render();
+
+    setSyncState('ok');
+    showToast(`✓ ${sheetOffers.length} offre${sheetOffers.length>1?'s':''} importée${sheetOffers.length>1?'s':''} depuis Sheets`);
+
+    // Auto-analyze offers that have a desc but no score
+    sheetOffers
+      .filter(o => o.desc && !o.score)
+      .slice(0, 5) // max 5 à la fois pour éviter trop d'appels API
+      .forEach(o => analyzeOffer(o.id));
+
+  } catch(e) {
+    setSyncState('err');
+    showToast('⚠ ' + (e.message || 'Erreur de sync'));
+    console.error('Sheets sync error:', e);
+  }
+}
+
+// Auto-refresh toutes les 2h
+const SYNC_INTERVAL = 2 * 60 * 60 * 1000; // 2 heures
+function scheduleAutoSync() {
+  setTimeout(() => {
+    syncSheets();
+    setInterval(syncSheets, SYNC_INTERVAL);
+  }, SYNC_INTERVAL);
+}
+
+// ── UTILS ─────────────────────────────────────────────────────
+function closeModal(id) { document.getElementById(id)?.classList.remove('open'); }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+load();
+
+if(!S.offers.length) {
+  S.offers = [
+    { id:uid(), company:'Publicis France', cat:'da', role:'DA Brand Senior', type:'Freelance', source:'LinkedIn', loc:'Paris 8e / Hybride', budget:'500€/j', url:'', liCompany:'https://linkedin.com/company/publicis', desc:'Recherche DA freelance pour piloter la direction artistique d\'une campagne brand internationale. 3 mois renouvelable. Maîtrise Adobe CC, sens du détail, expérience agence exigée.', contact:{ name:'Claire Moreau', role:'Directrice de Création', email:'c.moreau@publicis.fr', phone:'', li:'https://linkedin.com/in/claire-moreau', insta:'' }, status:'acontacter', score:8, aiContact:{ score:8, score_reasons:'Budget clair · Agence top · Mission longue', contact_title:'Directrice de Création', contact_why:'Décide des profils créatifs en agence', email_pattern:'prenom.nom@publicis.fr', linkedin_search_query:'directrice création Publicis Paris', approach_angle:'Montrer 1 cas brand international similaire' }, createdAt:Date.now()-86400000 },
+    { id:uid(), company:'Deezer', cat:'graph', role:'Graphiste Brand', type:'CDI', source:'WTTJ', loc:'Paris 11e / Remote', budget:'38-44k€', url:'', liCompany:'', desc:'Deezer cherche un graphiste pour renforcer son équipe brand. Projets print + digital. Univers musical, créativité forte attendue.', contact:{ name:'Thomas Renard', role:'Responsable Communication', email:'thomas.r@deezer.com', phone:'+33 6 12 34 56 78', li:'https://linkedin.com/in/thomas-renard', insta:'@thomas_deezer' }, status:'encours', score:6, aiContact:{ score:6, score_reasons:'Bonne marque · CDI mais intéressant · Budget moyen', contact_title:'Head of Brand', contact_why:'Pilote l\'identité visuelle', email_pattern:'prenom.nom@deezer.com', linkedin_search_query:'head of brand Deezer Paris', approach_angle:'Angle univers musical + cohérence visuelle globale' }, createdAt:Date.now()-172800000 },
+    { id:uid(), company:'Maison Kitsuné', cat:'photo', role:'Direction photo SS25', type:'Mission longue', source:'Malt', loc:'Paris / Remote', budget:'550€/j', url:'', liCompany:'', desc:'Direction photo et contenu brand pour collections SS25. Univers mode, culture, musique. 2 mois min.', contact:{ name:'', role:'', email:'', phone:'', li:'', insta:'' }, status:'acontacter', score:9, aiContact:{ score:9, score_reasons:'TJM excellent · Marque premium · Mission claire', contact_title:'DA / Brand Manager', contact_why:'Valide la direction créative photo', email_pattern:'prenom@kitsune.fr', linkedin_search_query:'directrice artistique Maison Kitsune Paris', approach_angle:'Univers photo éditorial mode x culture japonaise' }, createdAt:Date.now()-259200000 },
+  ];
+  persist();
+}
+
+render();
+
+// Sync au démarrage si le sheet a déjà des données (pas de démos)
+// On tente toujours une sync initiale silencieuse
+syncSheets().catch(() => {});
+
+// Planifier le rafraichissement auto toutes les 2h
+scheduleAutoSync();
+</script>
+</body>
+</html>
